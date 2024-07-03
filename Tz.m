@@ -1,11 +1,11 @@
-function R = Tz(rad, t)
+function T = Tz(rad, t)
 
     tol = eps;
     
     ct = cos(rad);
     st = sin(rad);
     
-    % make almost zero elements exactly zero
+    % Make almost zero elements exactly zero
     if abs(st) < tol
         st = 0;
     end
@@ -14,8 +14,8 @@ function R = Tz(rad, t)
     end
 
     
-    % create the rotation matrix
-    R = [
+    % Create the homogenous transfomation matrix
+    T = [
         ct  -st  0  t(1)
         st   ct  0  t(2)
         0    0   1   0
