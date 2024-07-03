@@ -1,4 +1,4 @@
-# Human Path Following Control Simulator
+# Human Path Following MPC Control 
 This MATLAB code simulates a human-path-following controller using Model Predictive Control (MPC). The optimization problem within the MPC framework is solved using CasADi, a symbolic framework for automatic differentiation and numeric optimization.
 
 ## Prerequisites
