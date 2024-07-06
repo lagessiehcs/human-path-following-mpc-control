@@ -15,7 +15,7 @@ import casadi.*
 
 
 %% Load route
-shape = "8"; % Option: Sinus, Sample and Straight, 8
+shape = "Sample"; % Option: Sinus, Sample and Straight, 8
 route = gen_path(shape); 
 
 L = arclength(route(:,1),route(:,2),'spline'); % calculate length of the path
@@ -99,7 +99,6 @@ while step <= size(waypoints,1)
    
     %% Derive relative distances from human to robot relative to the robot's Frame    
     d_rel = rotz(double(currentpose(3)))^-1*[dx dy 1]';
-    phi_rel = atan2(d_rel(2),d_rel(1));
 
 
     %% Design controller based on sensor outputs    
