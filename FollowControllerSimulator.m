@@ -93,11 +93,10 @@ while step <= size(waypoints,1)
     d_rel = rotz(double(currentpose(3)))^-1*[dx dy 1]';
 
     %% Design controller based on sensor outputs    
-    t_pose_tm1 = -velB * sampleTime;
-    t_T_tm1   = Tz(t_pose_tm1(3), t_pose_tm1(1:2));
-    path_storage = t_T_tm1 * [path_storage; zeros(1,size(path_storage,2)); ones(1,size(path_storage,2))];
-    path_storage = path_storage(1:2,:);
-  
+    current_pose_last = -velB * sampleTime;
+    current_T_last = Tz(current_pose_last(3), current_pose_last(1:2));
+    path_storage = current_T_last * [path_storage; zeros(1,size(path_storage,2)); ones(1,size(path_storage,2))];
+    path_storage = path_storage(1:2,:);  
   
     if any(abs(path_storage(:,end) - d_rel(1:2)) > 1e-3)
         path_storage = [path_storage d_rel(1:2)];
