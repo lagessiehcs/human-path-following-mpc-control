@@ -13,9 +13,8 @@ addpath("casadi-3.6.5-windows64-matlab2018b\")
 
 import casadi.*
 
-
 %% Load route
-shape = "Sample"; % Option: Sinus, Sample and Straight, 8
+shape = "Sinus"; % Option: Sinus, Sample and Straight, 8
 route = gen_path(shape); 
 
 L = arclength(route(:,1),route(:,2),'spline'); % calculate length of the path
@@ -26,14 +25,10 @@ waypoints = route*scale; % Exp. format of the waypoints:[1,1; 10,1; 20,1; 30,1; 
 %% Choose Control
 control = "MPC"; % Option: MPC, PID
 
-
-
 %% Define Vehicle Kinematics
 R = 0.1;                % Wheel radius [m]
 L = 0.35;                % Wheelbase [m]
 dd = DifferentialDrive(R,L);
-
-
 
 %% Simulation parameters
 sampleTime = 0.05;              % Sample time [s], euqlas 20 Hz
@@ -77,8 +72,6 @@ if control == "MPC"
                VelLim=[v_min v_max], AngVelLim=[omega_min omega_max]);
     
     optimizeProblem = optimizeProblem.setupProblem;
-    % mpcProblemFmincon = mpcPathFollowerFmincon(N, T, u, [v_min v_max], [omega_min omega_max]);
-    % mpcProblemFmincon = mpcPathFollowerFmincon.setupProblem;
 end
 
 %% Simulation loop
@@ -90,7 +83,6 @@ step = 1;
 % Initialization
 velB = [0; 0; 0];
 
-
 while step <= size(waypoints,1)
     
     % Sensor Output relative distance between current pose and operator
@@ -100,10 +92,7 @@ while step <= size(waypoints,1)
     %% Derive relative distances from human to robot relative to the robot's Frame    
     d_rel = rotz(double(currentpose(3)))^-1*[dx dy 1]';
 
-
     %% Design controller based on sensor outputs    
-
-
     t_pose_tm1 = -velB * sampleTime;
     t_T_tm1   = Tz(t_pose_tm1(3), t_pose_tm1(1:2));
     path_storage = t_T_tm1 * [path_storage; zeros(1,size(path_storage,2)); ones(1,size(path_storage,2))];
@@ -127,14 +116,12 @@ while step <= size(waypoints,1)
             vRef = 3*(norm(path_storage(:,1))); % v in [m/s]
             phi = atan2(path_storage(2,1), path_storage(1,1));
             wRef = 5*phi; % w in [rad/s]
-
             if abs(vRef) > v_max
                 vRef = sign(vRef)*1.6;
             end
             if abs(wRef) > omega_max
                 wRef = sign(wRef)*3.4;
             end
-    
 
             path_storage(:,1) = [];                
             
@@ -142,9 +129,7 @@ while step <= size(waypoints,1)
     else
         vRef = 0; % v in [m/s]
         wRef = 0; % w in [rad/s]
-    end    
-    % 
-    
+    end        
 
     [wL,wR] = inverseKinematics(dd,vRef,wRef);  % calculate motor rpms
    
@@ -171,8 +156,6 @@ while step <= size(waypoints,1)
     distance = norm(currentpose(1:2)-waypoints(end,:)');
     lastpose = currentpose;
     totalTime = totalTime + sampleTime;
-
-
 
     % Update visualization
     viz(currentpose,[waypoints(:,1) waypoints(:,2)])
