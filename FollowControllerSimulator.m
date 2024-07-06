@@ -14,7 +14,7 @@ addpath("casadi-3.6.5-windows64-matlab2018b\")
 import casadi.*
 
 %% Load route
-shape = "Sinus"; % Option: Sinus, Sample and Straight, 8
+shape = "Sample"; % Option: Sinus, Sample and Straight, 8
 route = gen_path(shape); 
 
 L = arclength(route(:,1),route(:,2),'spline'); % calculate length of the path
@@ -146,6 +146,10 @@ while step <= size(waypoints,1)
 
     % Perform forward discrete integration step
     currentpose = lastpose + vel*sampleTime; 
+    
+    % T = Tz(lastpose(3),lastpose(1:2));
+    % s = T * [path_storage; zeros(1,size(path_storage,2)); ones(1,size(path_storage,2))];
+    % s = s(1:2,:);
 
     if norm(vel) > 1e-3 && step > numPos
         err = err + norm(currentpose(1:2)-waypoints(step-numPos,:)')
@@ -158,6 +162,11 @@ while step <= size(waypoints,1)
 
     % Update visualization
     viz(currentpose,[waypoints(:,1) waypoints(:,2)])
+
+    % if step > 20
+    % viz([s(:,1); 0],[waypoints(:,1) waypoints(:,2)])
+    % end
+
     xlim([xMin xMax])
     ylim([yMin yMax])
 

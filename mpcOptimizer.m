@@ -42,6 +42,8 @@ classdef mpcOptimizer
         N
         sampleTime
         Controls
+        VRef
+        OmegaRef
         PosXLim
         PosYLim
         OrientLim
@@ -61,7 +63,8 @@ classdef mpcOptimizer
                 n (1, 1) {mustBeInteger}
                 t (1, 1) {mustBePositive}
                 u (:, 2) {mustBeNumeric}
-
+                options.VRef        (1, 1) {mustBeNumeric} = 1
+                options.OmegaRef    (1, 1) {mustBeNumeric} = 0
                 options.PosXLim     (1, 2) {mustBeNumeric} = [-inf inf]
                 options.PosYLim     (1, 2) {mustBeNumeric} = [-inf inf]
                 options.OrientLim   (1, 2) {mustBeNumeric} = [-inf inf]
@@ -77,7 +80,9 @@ classdef mpcOptimizer
             fl.N          = n;
             fl.sampleTime = t;
             fl.Controls   = u;
-
+    
+            fl.VRef      = options.VRef;
+            fl.OmegaRef  = options.OmegaRef;
             fl.PosXLim   = options.PosXLim;
             fl.PosYLim   = options.PosYLim; 
             fl.OrientLim = options.OrientLim;
@@ -134,8 +139,7 @@ classdef mpcOptimizer
             
             obj = setSolver(obj, cost, g, P, OPT_variables);
 
-            obj = setArgs(obj);
-            
+            obj = setArgs(obj);            
             
         end
         
@@ -156,9 +160,9 @@ classdef mpcOptimizer
                 x_ref = xs(1,1); y_ref = xs(2,1); theta_ref = atan2(y_next-y_ref,x_next-x_ref);
             
             
-                u_ref = 1; omega_ref = 0;
+                v_ref = obj.VRef; omega_ref = obj.OmegaRef;
                 obj.Args.p(5*k-1:5*k+1) = [x_ref, y_ref, theta_ref];
-                obj.Args.p(5*k+2:5*k+3) = [u_ref, omega_ref];
+                obj.Args.p(5*k+2:5*k+3) = [v_ref, omega_ref];
             end
        
             % initial value of the optimization variables
