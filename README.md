@@ -34,6 +34,6 @@ The following packages are required for the implementation in Python:
    python -m pip install scipy
    ````
 
-
-
+## Source
+The MPC implementation in this project was inspired by the workshop [MPC and MHE implementation in Matlab using Casadi](https://www.youtube.com/watch?v=RrnkPrcpyEA).
 
