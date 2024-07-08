@@ -1,8 +1,5 @@
 import numpy as np
-from scipy.spatial.transform import Rotation as R
-import casadi as ca
 import matplotlib.pyplot as plt
-
 from path import gen_path, arclength
 from mpc_optimizer import MpcOptimizer
 from transform import body_to_world, Tz, Rz
@@ -16,7 +13,6 @@ L = arclength(route[:, 0], route[:, 1],'spline')[0]  # calculate length of the p
 scale = 0.05 / (L / route.shape[0])  # scale the path so as the human walks at 1 m/s
 # Define waypoints
 waypoints = route * scale  # Exp. format of the waypoints
-
 
 # Choose Control
 control = "MPC"  # Option: MPC, PID
@@ -58,7 +54,7 @@ err = 0
 
 numPos = 20  # Number of stored position (Corresponding to a 1 m distance to human)
 v_max = 1.5
-omega_max = np.pi / 1.2
+omega_max = np.pi
 v_min = -v_max
 omega_min = -omega_max
 
@@ -72,7 +68,7 @@ if control == "MPC":
                                    WeightV=0.1, WeightOmega=0.01,
                                    VelLim=[v_min, v_max], AngVelLim=[omega_min, omega_max])
 
-    optimizeProblem = optimizeProblem.setup_problem()
+    optimizeProblem.setup_problem()
 
 # Simulation loop
 step = 1
@@ -100,10 +96,9 @@ while step <= waypoints.shape[0]:
     if path_storage.shape[1] > numPos:
         if control == "MPC":
             # ------------------MPC Optimization-------------------------
-            optimizeProblem = optimizeProblem.solve_problem(path_storage)
+            optimizeProblem.solve_problem(path_storage)
             vRef = optimizeProblem.Controls[0, 0]  # v in [m/s]
-            wRef = optimizeProblem.Controls[0, 1]  # w in [rad/s]
-       
+            wRef = optimizeProblem.Controls[0, 1]  # w in [rad/s]       
 
             path_storage = path_storage[:, 1:]
 
@@ -136,7 +131,7 @@ while step <= waypoints.shape[0]:
     currentpose = lastpose + vel * sampleTime
 
     if np.linalg.norm(vel) > 1e-3 and step > numPos:
-        err = err + np.linalg.norm(currentpose[:2] - waypoints[step - numPos, :])
+        err = err + np.linalg.norm(currentpose[:2] - waypoints[step - numPos - 1, :])
         print(err)
 
     # T = Tz(lastpose[2],lastpose[:2])
