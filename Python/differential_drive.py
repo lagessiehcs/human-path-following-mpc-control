@@ -1,5 +1,3 @@
-import numpy as np
-
 class DifferentialDrive:
     # Class variables for the distance between wheels and radius of wheels
     wheel_base = 0.5  # distance between wheels (m)
