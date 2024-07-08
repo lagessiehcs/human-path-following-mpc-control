@@ -6,7 +6,7 @@ from transform import body_to_world, Tz, Rz
 from differential_drive import DifferentialDrive
 
 # Load route
-shape = "Sinus"  # Option: Sinus, Sample and Straight, 8
+shape = "Straight"  # Option: Sinus, Sample and Straight, 8
 route = gen_path(shape)
 
 L = arclength(route[:, 0], route[:, 1],'spline')[0]  # calculate length of the path
@@ -143,6 +143,8 @@ while step <= waypoints.shape[0]:
     plt.plot(waypoints[:, 0], waypoints[:, 1], 'r.', markersize=2)
     # plt.plot(s[0], s[1], 'b')
     plt.gca().set_aspect('equal')
+    plt.xlim(xMin,xMax)
+    plt.ylim(yMin,yMax)
     traj_x.append(currentpose[0])
     traj_y.append(currentpose[1])
     traj_handle.set_data(traj_x, traj_y)
