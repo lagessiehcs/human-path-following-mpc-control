@@ -26,11 +26,11 @@ def gen_path(shape, f=1):
         x = np.linspace(0, 10, 200)
         y = np.zeros_like(x)
     elif shape == "Sample":
-        mat_file_path = os.path.join(current_script_dir, 'Paths\\route.mat')
+        mat_file_path = os.path.join(current_script_dir, 'route.mat')
         route = io.loadmat(mat_file_path)['route']
         return route
     elif shape == "8":
-        mat_file_path = os.path.join(current_script_dir, 'Paths\\eight.mat')
+        mat_file_path = os.path.join(current_script_dir, 'eight.mat')
         route = io.loadmat(mat_file_path)['route']
         return route
     else:
