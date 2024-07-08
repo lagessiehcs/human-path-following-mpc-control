@@ -10,13 +10,15 @@ from visualize import Visualize
 shape = "Sample"  # Option: Sinus, Sample and Straight, 8
 route = gen_path(shape)
 
-L = arclength(route[:, 0], route[:, 1],'spline')[0]  # calculate length of the path
-scale = 0.05 / (L / route.shape[0])  # scale the path so as the human walks at 1 m/s
-# Define waypoints
-waypoints = route * scale  # Exp. format of the waypoints
-
 # Choose Control
 control = "MPC"  # Option: MPC, PID
+
+
+L = arclength(route[:, 0], route[:, 1],'spline')[0] # calculate length of the path
+scale = 0.05 / (L / route.shape[0])  # scale the path so as the human walks at 1 m/s
+
+# Define waypoints
+waypoints = route * scale  # Exp. format of the waypoints
 
 # Define direction Kinematics
 R = 0.1;                # Wheel radius [m]
@@ -33,8 +35,7 @@ lastpose = initPose
 
 path_storage = np.zeros((2, 1))
 
-    
-# x and y limits for visualization
+# Setup visualization
 positions = [initPose[:2]]
 vis = Visualize()
 vis.setup_plot(waypoints, shape)
@@ -84,7 +85,7 @@ while step <= waypoints.shape[0]:
 
     if path_storage.shape[1] > numPos:
         if control == "MPC":
-            # ------------------MPC Optimization-------------------------
+            # ------------------ MPC Optimization -------------------------
             optimizeProblem.solve_problem(path_storage)
             vRef = optimizeProblem.Controls[0, 0]  # v in [m/s]
             wRef = optimizeProblem.Controls[0, 1]  # w in [rad/s]       

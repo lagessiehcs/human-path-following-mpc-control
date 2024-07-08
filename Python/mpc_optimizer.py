@@ -69,7 +69,6 @@ class MpcOptimizer:
 
         self._set_solver(cost, g, P, OPT_variables)
         self._set_args()
-        return self
 
     def solve_problem(self, path):
         x0 = np.array([0, 0, 0])
@@ -98,7 +97,6 @@ class MpcOptimizer:
         sol = self.Solver(x0=self.Args['x0'], lbx=self.Args['lbx'], ubx=self.Args['ubx'], 
                           lbg=self.Args['lbg'], ubg=self.Args['ubg'], p=self.Args['p'])
         self.Controls = np.reshape(sol['x'][self.NumStates * (self.N + 1):].full().T, (self.N, 2)) 
-        return self
 
     def _cost_function(self, X, U, P):
         cost = 0

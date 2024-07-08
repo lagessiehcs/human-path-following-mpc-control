@@ -14,7 +14,7 @@ addpath("casadi-3.6.5-windows64-matlab2018b\")
 import casadi.*
 
 %% Load route
-shape = "Sinus"; % Option: Sinus, Sample and Straight, 8
+shape = "Sample"; % Option: Sinus, Sample and Straight, 8
 route = gen_path(shape); 
 
 L = arclength(route(:,1),route(:,2),'spline'); % calculate length of the path
