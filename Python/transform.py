@@ -1,6 +1,17 @@
 import numpy as np
 
-def Rz(rad):
+def Rz(rad: float) -> np.ndarray:
+    """
+    Create a 3x3 rotation matrix for a rotation around the z-axis by `rad` radians.
+
+    Parameters:
+    rad : float
+        Rotation angle in radians.
+
+    Returns:
+    R : np.ndarray
+        3x3 rotation matrix.
+    """
     tol = np.finfo(float).eps
     
     ct = np.cos(rad)
@@ -12,7 +23,7 @@ def Rz(rad):
     if abs(ct) < tol:
         ct = 0
 
-    # Create the rotational matrix
+    # Create the rotation matrix
     R = np.array([
         [ct, -st,  0],
         [st,  ct,  0],
@@ -20,7 +31,21 @@ def Rz(rad):
     ])
     return R
 
-def Tz(rad, t):
+def Tz(rad: float, t: np.ndarray) -> np.ndarray:
+    """
+    Create a 4x4 homogeneous transformation matrix for a rotation around the z-axis
+    by `rad` radians and a translation by `t`.
+
+    Parameters:
+    rad : float
+        Rotation angle in radians.
+    t : np.ndarray
+        Translation vector [tx, ty].
+
+    Returns:
+    T : np.ndarray
+        4x4 homogeneous transformation matrix.
+    """
     tol = np.finfo(float).eps
     
     ct = np.cos(rad)
@@ -32,7 +57,7 @@ def Tz(rad, t):
     if abs(ct) < tol:
         ct = 0
 
-    # Create the homogenous transformation matrix
+    # Create the homogeneous transformation matrix
     T = np.array([
         [ct, -st,  0, t[0]],
         [st,  ct,  0, t[1]],
@@ -42,21 +67,19 @@ def Tz(rad, t):
     
     return T
 
-import numpy as np
-
-def body_to_world(velB, pose):
+def body_to_world(velB: np.ndarray, pose: np.ndarray) -> np.ndarray:
     """
-    Converts a 2D velocity input velB = [vx;vy;w] from body (vehicle) 
+    Convert a 2D velocity input velB = [vx; vy; w] from body (vehicle) 
     coordinates to world (global) coordinates.
 
     Parameters:
-    velB : numpy array
+    velB : np.ndarray
         2D velocity input in body coordinates [vx, vy, w].
-    pose : numpy array
+    pose : np.ndarray
         Pose of the vehicle [x, y, theta] where theta is the orientation.
 
     Returns:
-    velW : numpy array
+    velW : np.ndarray
         Velocity in world coordinates [vx_w, vy_w, w_w].
     """
     theta = pose[2]
@@ -69,5 +92,3 @@ def body_to_world(velB, pose):
     velW = np.dot(rotation_matrix, velB)
     
     return velW
-
-

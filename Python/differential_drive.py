@@ -1,31 +1,51 @@
 class DifferentialDrive:
-    # Class variables for the distance between wheels and radius of wheels
-    wheel_base = 0.5  # distance between wheels (m)
-    wheel_radius = 0.1  # radius of wheels (m)
-    
-    def __init__(self, wheel_base=None, wheel_radius=None):
-        if wheel_base is not None:
-            DifferentialDrive.wheel_base = wheel_base
-        if wheel_radius is not None:
-            DifferentialDrive.wheel_radius = wheel_radius
+    def __init__(self, wheel_base=0.5, wheel_radius=0.1):
+        """
+        Initialize the DifferentialDrive model.
 
-    @staticmethod
-    def inverse_kinematics(v, omega):
-        b = DifferentialDrive.wheel_base
-        r = DifferentialDrive.wheel_radius
+        Parameters:
+        - wheel_base (float): Distance between the wheels (default is 0.5 m).
+        - wheel_radius (float): Radius of the wheels (default is 0.1 m).
+        """
+        self.wheel_base = wheel_base
+        self.wheel_radius = wheel_radius
+
+    def inverse_kinematics(self, v, omega):
+        """
+        Calculate the wheel velocities given the linear and angular velocities.
+
+        Parameters:
+        - v (float): Linear velocity of the robot (m/s).
+        - omega (float): Angular velocity of the robot (rad/s).
+
+        Returns:
+        - omega_L (float): Angular velocity of the left wheel (rad/s).
+        - omega_R (float): Angular velocity of the right wheel (rad/s).
+        """
+        b = self.wheel_base
+        r = self.wheel_radius
         
         omega_L = (v - omega * b * 0.5) / r
         omega_R = (v + omega * b * 0.5) / r
         
         return omega_L, omega_R
     
-    @staticmethod
-    def forward_kinematics(v_L, v_R):
-        b = DifferentialDrive.wheel_base
-        r = DifferentialDrive.wheel_radius
+    def forward_kinematics(self, omega_L, omega_R):
+        """
+        Calculate the linear and angular velocities given the wheel velocities.
+
+        Parameters:
+        - omega_L (float): Angular velocity of the left wheel (rad/s).
+        - omega_R (float): Angular velocity of the right wheel (rad/s).
+
+        Returns:
+        - v (float): Linear velocity of the robot (m/s).
+        - omega (float): Angular velocity of the robot (rad/s).
+        """
+        b = self.wheel_base
+        r = self.wheel_radius
         
-        v = r * (v_L + v_R) * 0.5
-        omega = r * (v_R - v_L) / b
+        v = r * (omega_L + omega_R) * 0.5
+        omega = r * (omega_R - omega_L) / b
         
         return v, omega
-

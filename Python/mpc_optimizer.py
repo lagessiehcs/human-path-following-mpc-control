@@ -2,7 +2,16 @@ import casadi as ca
 import numpy as np
 
 class MpcOptimizer:
-    def __init__(self, n, t, u, **options):
+    def __init__(self, n: int, t: float, u: np.ndarray, **options):
+        """
+        Initialize the MPC optimizer.
+
+        Parameters:
+        - n (int): Prediction horizon.
+        - t (float): Sampling time.
+        - u (np.ndarray): Initial control inputs.
+        - options (dict): Additional optional parameters.
+        """
         # Required properties
         self.N = n
         self.sampleTime = t
@@ -33,6 +42,9 @@ class MpcOptimizer:
         self.Solver = None
 
     def setup_problem(self):
+        """
+        Setup the MPC optimization problem.
+        """
         # Define symbolic variables
         x = ca.SX.sym('x')
         y = ca.SX.sym('y')
@@ -70,7 +82,13 @@ class MpcOptimizer:
         self._set_solver(cost, g, P, OPT_variables)
         self._set_args()
 
-    def solve_problem(self, path):
+    def solve_problem(self, path: np.ndarray):
+        """
+        Solve the MPC optimization problem.
+
+        Parameters:
+        - path (np.ndarray): Reference path.
+        """
         x0 = np.array([0, 0, 0])
         X0 = np.tile(x0, (self.N + 1, 1)).T
         u0 = self.Controls
@@ -98,18 +116,44 @@ class MpcOptimizer:
                           lbg=self.Args['lbg'], ubg=self.Args['ubg'], p=self.Args['p'])
         self.Controls = np.reshape(sol['x'][self.NumStates * (self.N + 1):].full().T, (self.N, 2)) 
 
-    def _cost_function(self, X, U, P):
+    def _cost_function(self, X: ca.SX, U: ca.SX, P: ca.SX) -> ca.SX:
+        """
+        Define the cost function for the MPC problem.
+
+        Parameters:
+        - X (ca.SX): States.
+        - U (ca.SX): Controls.
+        - P (ca.SX): Parameters.
+
+        Returns:
+        - cost (ca.SX): Cost function.
+        """
         cost = 0
         for k in range(self.N):
             state = X[:, k]
             control = U[:, k]
 
+            state_ref = P[(self.NumStates+self.NumControls)*(k+1)-2 : (self.NumStates+self.NumControls)*(k+1)-2+self.NumStates]
+            control_ref = P[(self.NumStates+self.NumControls)*(k+1)+1 : (self.NumStates+self.NumControls)*(k+1)+1+self.NumControls]
+
             # Cost function to minimize
-            cost += ca.mtimes([(state - P[(self.NumStates+self.NumControls)*(k+1)-2 : (self.NumStates+self.NumControls)*(k+1)-2+self.NumStates]).T, self.Q, (state - P[(self.NumStates+self.NumControls)*(k+1)-2 : (self.NumStates+self.NumControls)*(k+1)-2+self.NumStates])]) + \
-                    ca.mtimes([(control - P[(self.NumStates+self.NumControls)*(k+1)+1 : (self.NumStates+self.NumControls)*(k+1)+1+self.NumControls]).T, self.R, (control - P[(self.NumStates+self.NumControls)*(k+1)+1 : (self.NumStates+self.NumControls)*(k+1)+1+self.NumControls])])
+            cost += ca.mtimes([(state - state_ref).T, self.Q, (state - state_ref)]) + \
+                    ca.mtimes([(control - control_ref).T, self.R, (control - control_ref)])
         return cost
 
-    def _nonlinear_constraints(self, f, X, U, P):
+    def _nonlinear_constraints(self, f: ca.Function, X: ca.SX, U: ca.SX, P: ca.SX) -> ca.SX:
+        """
+        Define the nonlinear constraints for the MPC problem.
+
+        Parameters:
+        - f (ca.Function): State transition function.
+        - X (ca.SX): States.
+        - U (ca.SX): Controls.
+        - P (ca.SX): Parameters.
+
+        Returns:
+        - constraints (ca.SX): Nonlinear constraints.
+        """
         # Initial condition constraints
         constraints = X[:, 0] - P[:self.NumStates]
         for k in range(self.N):
@@ -124,7 +168,16 @@ class MpcOptimizer:
             constraints = ca.vertcat(constraints, st_next - st_next_euler)
         return constraints
 
-    def _set_solver(self, cost, g, P, OPT_variables):
+    def _set_solver(self, cost: ca.SX, g: ca.SX, P: ca.SX, OPT_variables: ca.SX):
+        """
+        Set up the solver for the MPC problem.
+
+        Parameters:
+        - cost (ca.SX): Cost function.
+        - g (ca.SX): Constraints.
+        - P (ca.SX): Parameters.
+        - OPT_variables (ca.SX): Optimization variables.
+        """
         nlp_prob = {'f': cost, 'x': OPT_variables, 'g': g, 'p': P}
 
         opts = {
@@ -138,6 +191,9 @@ class MpcOptimizer:
         self.Solver = ca.nlpsol('solver', 'ipopt', nlp_prob, opts)
 
     def _set_args(self):
+        """
+        Set the arguments for the solver.
+        """
         self.Args['lbg'] = ca.DM.zeros(self.NumStates * (self.N + 1), 1)  # Equality constraints
         self.Args['ubg'] = ca.DM.zeros(self.NumStates * (self.N + 1), 1)  # Equality constraints
 
