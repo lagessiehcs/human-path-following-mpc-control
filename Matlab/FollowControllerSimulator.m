@@ -57,7 +57,7 @@ err = 0;
 
 numPos = 20; % Number of stored position (Coresponding to a 1 m distance to human)
 v_max = 1.5; 
-omega_max = pi/1.2;
+omega_max = pi;
 v_min = -v_max;
 omega_min = -omega_max;
 
