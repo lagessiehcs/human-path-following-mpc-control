@@ -39,7 +39,7 @@ classdef mpcOptimizer
     %     solveProblem - Solve the optimization problem
     
     properties
-        N
+        N        
         sampleTime
         Controls
         VRef
@@ -51,6 +51,9 @@ classdef mpcOptimizer
         AngVelLim
         Q
         R
+
+        numStates = 3 % [x, y, theta]
+        numControls = 2 % [v, omega]
 
         Args
         Solver
@@ -105,34 +108,32 @@ classdef mpcOptimizer
             y = SX.sym('y'); 
             theta = SX.sym('theta');
 
-            states = [x;y;theta]; 
-            numStates = length(states);
+            states = [x;y;theta];
             
             v = SX.sym('v'); 
             omega = SX.sym('omega');
             controls = [v;omega]; 
-            numControls = length(controls);
             rhs = [v*cos(theta);v*sin(theta);omega];
 
             % Nonlinear mapping function f(x,u)
             f = Function('f',{states,controls},{rhs}); 
 
             % Decision variables (controls)
-            U = SX.sym('U',numControls,obj.N); 
+            U = SX.sym('U',obj.numControls,obj.N); 
 
             % Parameters (which include the initial state and the reference 
             % along the predicted trajectory (reference states and
             % reference controls))
-            P = SX.sym('P',numStates + obj.N*(numStates+numControls)); 
+            P = SX.sym('P',obj.numStates + obj.N*(obj.numStates+obj.numControls)); 
                  
             % States over the optimization problem.
-            X = SX.sym('X',numStates,(obj.N+1)); 
+            X = SX.sym('X',obj.numStates,(obj.N+1)); 
 
             % Make the decision variable one column  vector
-            OPT_variables = [reshape(X,3*(obj.N+1),1);reshape(U,2*obj.N,1)];                 
+            OPT_variables = [reshape(X,obj.numStates*(obj.N+1),1);reshape(U,obj.numControls*obj.N,1)];                 
    
             % Calculate cost function
-            cost = CostFun(obj, X, U, P, numStates, numControls);
+            cost = CostFun(obj, X, U, P);
 
             % Calculate nonlinear constraints
             g = nonlinearConstraints(obj, f, X, U, P);
@@ -154,22 +155,21 @@ classdef mpcOptimizer
             X0 = repmat(x0,1,obj.N+1)'; % initialization of the states decision variables
             u0 = obj.Controls;        
             xs = path;
-            obj.Args.p(1:3) = x0; % initial condition of the robot posture
+            obj.Args.p(1:obj.numStates) = x0; % initial condition of the robot posture
             for k = 1:obj.N 
                 x_next = xs(1,5); y_next = xs(2,5);
                 x_ref = xs(1,1); y_ref = xs(2,1); theta_ref = atan2(y_next-y_ref,x_next-x_ref);
             
             
                 v_ref = obj.VRef; omega_ref = obj.OmegaRef;
-                obj.Args.p(5*k-1:5*k+1) = [x_ref, y_ref, theta_ref];
-                obj.Args.p(5*k+2:5*k+3) = [v_ref, omega_ref];
+                obj.Args.p(5*k-1:5*k-1+(obj.numStates-1)) = [x_ref, y_ref, theta_ref];
+                obj.Args.p(5*k+2:5*k+2+(obj.numControls-1)) = [v_ref, omega_ref];
             end
-       
             % initial value of the optimization variables
-            obj.Args.x0  = [reshape(X0',3*(obj.N+1),1);reshape(u0',2*obj.N,1)];
+            obj.Args.x0  = [reshape(X0',obj.numStates*(obj.N+1),1);reshape(u0',obj.numControls*obj.N,1)];
             sol = obj.Solver('x0', obj.Args.x0, 'lbx', obj.Args.lbx, 'ubx', obj.Args.ubx,...
                 'lbg', obj.Args.lbg, 'ubg', obj.Args.ubg,'p',obj.Args.p);
-            obj.Controls = reshape(full(sol.x(3*(obj.N+1)+1:end))',2,obj.N)'; % get controls only from the solution
+            obj.Controls = reshape(full(sol.x(obj.numStates*(obj.N+1)+1:end))',2,obj.N)'; % get controls only from the solution
         end
 
 
@@ -195,20 +195,20 @@ classdef mpcOptimizer
         function obj = setArgs(obj)
             obj.Args = struct;
             
-            obj.Args.lbg(1:3*(obj.N+1)) = 0;  % -1e-20  % Equality constraints
-            obj.Args.ubg(1:3*(obj.N+1)) = 0;  % 1e-20   % Equality constraints
+            obj.Args.lbg(1:obj.numStates*(obj.N+1)) = 0;  % -1e-20  % Equality constraints
+            obj.Args.ubg(1:obj.numStates*(obj.N+1)) = 0;  % 1e-20   % Equality constraints
             
-            obj.Args.lbx(1:3:3*(obj.N+1),1) = obj.PosXLim(1); %state x lower bound % new - adapt the bound
-            obj.Args.ubx(1:3:3*(obj.N+1),1) = obj.PosXLim(2); %state x upper bound  % new - adapt the bound
-            obj.Args.lbx(2:3:3*(obj.N+1),1) = obj.PosYLim(1); %state y lower bound
-            obj.Args.ubx(2:3:3*(obj.N+1),1) = obj.PosYLim(2); %state y upper bound
-            obj.Args.lbx(3:3:3*(obj.N+1),1) = obj.OrientLim(1); %state theta lower bound
-            obj.Args.ubx(3:3:3*(obj.N+1),1) = obj.OrientLim(2); %state theta upper bound
+            obj.Args.lbx(1:obj.numStates:obj.numStates*(obj.N+1),1) = obj.PosXLim(1); %state x lower bound % new - adapt the bound
+            obj.Args.ubx(1:obj.numStates:obj.numStates*(obj.N+1),1) = obj.PosXLim(2); %state x upper bound  % new - adapt the bound
+            obj.Args.lbx(2:obj.numStates:obj.numStates*(obj.N+1),1) = obj.PosYLim(1); %state y lower bound
+            obj.Args.ubx(2:obj.numStates:obj.numStates*(obj.N+1),1) = obj.PosYLim(2); %state y upper bound
+            obj.Args.lbx(3:obj.numStates:obj.numStates*(obj.N+1),1) = obj.OrientLim(1); %state theta lower bound
+            obj.Args.ubx(3:obj.numStates:obj.numStates*(obj.N+1),1) = obj.OrientLim(2); %state theta upper bound
             
-            obj.Args.lbx(3*(obj.N+1)+1:2:3*(obj.N+1)+2*obj.N,1) = obj.VelLim(1); % v lower bound
-            obj.Args.ubx(3*(obj.N+1)+1:2:3*(obj.N+1)+2*obj.N,1) = obj.VelLim(2); % v upper bound
-            obj.Args.lbx(3*(obj.N+1)+2:2:3*(obj.N+1)+2*obj.N,1) = obj.AngVelLim(1); % omega lower bound
-            obj.Args.ubx(3*(obj.N+1)+2:2:3*(obj.N+1)+2*obj.N,1) = obj.AngVelLim(2); % omega upper bound
+            obj.Args.lbx(obj.numStates*(obj.N+1)+1:obj.numControls:obj.numStates*(obj.N+1)+obj.numControls*obj.N,1) = obj.VelLim(1); % v lower bound
+            obj.Args.ubx(obj.numStates*(obj.N+1)+1:obj.numControls:obj.numStates*(obj.N+1)+obj.numControls*obj.N,1) = obj.VelLim(2); % v upper bound
+            obj.Args.lbx(obj.numStates*(obj.N+1)+2:obj.numControls:obj.numStates*(obj.N+1)+obj.numControls*obj.N,1) = obj.AngVelLim(1); % omega lower bound
+            obj.Args.ubx(obj.numStates*(obj.N+1)+2:obj.numControls:obj.numStates*(obj.N+1)+obj.numControls*obj.N,1) = obj.AngVelLim(2); % omega upper bound
         end
        
 
@@ -217,7 +217,7 @@ end
 
 
 %% ----------- Cost Function --------------------------------------
-function cost = CostFun(obj, X, U, P, n_states, n_controls)
+function cost = CostFun(obj, X, U, P)
 
 cost = 0; 
 
@@ -225,12 +225,12 @@ for k = 1:obj.N
     state = X(:,k);
     control = U(:,k);
 
-    % Sum of n_states+n_controls
-    n_var = n_states + n_controls;
+    % Sum of obj.numStates+obj.numControls
+    n_var = obj.numStates + obj.numControls;
 
     % Cost function to minimize
-    cost = cost+(state-P(n_var*k-1:n_var*k+1))'*obj.Q*(state-P(n_var*k-1:n_var*k+1)) + ...
-         (control-P(n_var*k+2:n_var*k+3))'*obj.R*(control-P(n_var*k+2:n_var*k+3)) ;            
+    cost = cost+(state-P(n_var*k-1:n_var*k-1+(obj.numStates-1)))'*obj.Q*(state-P(n_var*k-1:n_var*k-1+(obj.numStates-1))) + ...
+         (control-P(n_var*k+2:n_var*k+2+(obj.numControls-1)))'*obj.R*(control-P(n_var*k+2:n_var*k+2+(obj.numControls-1))) ;            
 end
 
 end
@@ -239,7 +239,7 @@ end
 function constraints = nonlinearConstraints(obj, f, X, U, P)
 
 % Initial condition constraints
-constraints = X(:,1)-P(1:3);
+constraints = X(:,1)-P(1:obj.numStates);
 
 for k = 1:obj.N
     state = X(:,k);
