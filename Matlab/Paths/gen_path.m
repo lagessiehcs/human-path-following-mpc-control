@@ -9,7 +9,7 @@ switch shape
         x = linspace(0,1,200);
         y = sin(2*pi*options.f*x);
     case "Straight"
-        x = linspace(0,10,1000);
+        x = linspace(0,10,200);
         y = 0*x;
     case "Sample"
         route = load('route.mat').route;

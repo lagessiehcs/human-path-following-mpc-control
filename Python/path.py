@@ -18,7 +18,7 @@ def gen_path(shape, f=1):
         x = np.linspace(0, 1, 200)
         y = np.sin(2 * np.pi * f * x)
     elif shape == "Straight":
-        x = np.linspace(0, 10, 1000)
+        x = np.linspace(0, 10, 200)
         y = np.zeros_like(x)
     elif shape == "Sample":
         # Assuming route is saved in 'route.npy' file
