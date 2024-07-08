@@ -1,5 +1,5 @@
 # Human Path Following MPC Control 
-In this project, a differential drive mobile robot is controlled to follow a human path using Model Predictive Control (MPC). The optimization problem within the MPC framework is solved using [CasADi](https://web.casadi.org/), a symbolic framework for automatic differentiation and numerical optimization. The implementation of the control and the visualization is available in MATLAB and Python.
+In this project, a differential drive mobile robot is controlled to follow a human path using Model Predictive Control (MPC). The optimization problem within the MPC framework is solved using [CasADi](https://web.casadi.org/), a symbolic framework for automatic differentiation and numerical optimization. This project contains two implementation versions, one in MATLAB and one in Python.
 
 ## Prerequisites
 ### MATLAB 
