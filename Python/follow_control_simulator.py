@@ -13,11 +13,9 @@ route = gen_path(shape)
 # Choose Control
 control = "MPC"  # Option: MPC, PID
 
-
+# Define waypoints
 L = arclength(route[:, 0], route[:, 1],'spline')[0] # calculate length of the path
 scale = 0.05 / (L / route.shape[0])  # scale the path so as the human walks at 1 m/s
-
-# Define waypoints
 waypoints = route * scale  # Exp. format of the waypoints
 
 # Define direction Kinematics

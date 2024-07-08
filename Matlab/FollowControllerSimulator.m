@@ -17,13 +17,14 @@ import casadi.*
 shape = "Sample"; % Option: Sinus, Sample and Straight, 8
 route = gen_path(shape); 
 
-L = arclength(route(:,1),route(:,2),'spline'); % calculate length of the path
-scale = 0.05/(L/size(route,1)); % scale the path so as the human walks at 1 m/s
-% Define waypoints
-waypoints = route*scale; % Exp. format of the waypoints:[1,1; 10,1; 20,1; 30,1; 30,15;20,15;10,15;1,15];
-
 %% Choose Control
 control = "MPC"; % Option: MPC, PID
+
+%% Define waypoints
+L = arclength(route(:,1),route(:,2),'spline'); % calculate length of the path
+scale = 0.05/(L/size(route,1)); % scale the path so as the human walks at 1 m/s
+
+waypoints = route*scale; % Exp. format of the waypoints:[1,1; 10,1; 20,1; 30,1; 30,15;20,15;10,15;1,15];
 
 %% Define Vehicle Kinematics
 R = 0.1;                % Wheel radius [m]
