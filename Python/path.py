@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.interpolate import PchipInterpolator, CubicSpline
 from scipy.integrate import quad
+from scipy import io
+import os
 
 
 def gen_path(shape, f=1):
@@ -14,6 +16,9 @@ def gen_path(shape, f=1):
     Returns:
     np.ndarray: Generated path with shape (n, 2).
     """
+
+    current_script_dir = os.path.dirname(os.path.abspath(__file__))
+
     if shape == "Sinus":
         x = np.linspace(0, 1, 200)
         y = np.sin(2 * np.pi * f * x)
@@ -21,12 +26,12 @@ def gen_path(shape, f=1):
         x = np.linspace(0, 10, 200)
         y = np.zeros_like(x)
     elif shape == "Sample":
-        # Assuming route is saved in 'route.npy' file
-        route = np.load('route.npy')
+        mat_file_path = os.path.join(current_script_dir, 'Paths\\route.mat')
+        route = io.loadmat(mat_file_path)['route']
         return route
     elif shape == "8":
-        # Assuming route is saved in 'eight.npy' file
-        route = np.load('eight.npy')
+        mat_file_path = os.path.join(current_script_dir, 'Paths\\eight.mat')
+        route = io.loadmat(mat_file_path)['route']
         return route
     else:
         raise ValueError("Unsupported shape: {}".format(shape))
