@@ -1,12 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from path import gen_path, arclength
+from Paths.path import gen_path, arclength
 from mpc_optimizer import MpcOptimizer
 from transform import body_to_world, Tz, Rz
 from differential_drive import DifferentialDrive
+from visualize import Visualize
 
 # Load route
-shape = "Straight"  # Option: Sinus, Sample and Straight, 8
+shape = "Sample"  # Option: Sinus, Sample and Straight, 8
 route = gen_path(shape)
 
 L = arclength(route[:, 0], route[:, 1],'spline')[0]  # calculate length of the path
@@ -17,7 +18,7 @@ waypoints = route * scale  # Exp. format of the waypoints
 # Choose Control
 control = "MPC"  # Option: MPC, PID
 
-# Define Vehicle Kinematics
+# Define direction Kinematics
 R = 0.1;                # Wheel radius [m]
 L = 0.35;               # Wheelbase [m]
 dd = DifferentialDrive(R,L)
@@ -32,19 +33,11 @@ lastpose = initPose
 
 path_storage = np.zeros((2, 1))
 
-# Visualization preparation
-traj_x = []
-traj_y = []
+    
 # x and y limits for visualization
-xMax = 1.2 * np.max(waypoints[:, 0])
-xMin = np.min(waypoints[:, 0]) - 0.2 * np.abs(np.max(waypoints[:, 0]))
-offset = 0
-if shape == "Straight":
-    offset = 5
-yMax = 1.3 * np.max(waypoints[:, 1]) + offset
-yMin = np.min(waypoints[:, 1]) - 0.3 * np.abs(np.max(waypoints[:, 1])) - offset
-traj_handle, = plt.plot(0, 0, 'b.-', linewidth=1,markersize=4)
-plt.ion()
+positions = [initPose[:2]]
+vis = Visualize()
+vis.setup_plot(waypoints, shape)
 
 err = 0
 
@@ -140,15 +133,15 @@ while step <= waypoints.shape[0]:
     totalTime = totalTime + sampleTime
    
     # plt.clf()  # Clear the current figure
-    plt.plot(waypoints[:, 0], waypoints[:, 1], 'r.', markersize=2)
+    
     # plt.plot(s[0], s[1], 'b')
-    plt.gca().set_aspect('equal')
-    plt.xlim(xMin,xMax)
-    plt.ylim(yMin,yMax)
-    traj_x.append(currentpose[0])
-    traj_y.append(currentpose[1])
-    traj_handle.set_data(traj_x, traj_y)
+    positions = np.vstack((positions, currentpose[:2]))
+    # plt.plot(veh[:, 0], veh[:, 1], color='b')
+    vis.update_plot(waypoints, positions, currentpose[2], sampleTime)
 
     step += 1
-    plt.pause(sampleTime)
+
+print('Total time: ', totalTime)
+print('Error sum:', err)
 plt.show(block=True)
+
