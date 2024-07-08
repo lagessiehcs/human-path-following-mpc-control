@@ -22,7 +22,6 @@ R = 0.1;                # Wheel radius [m]
 L = 0.35;               # Wheelbase [m]
 dd = DifferentialDrive(R,L)
 
-
 # Simulation parameters
 sampleTime = 0.05  # Sample time [s], equals 20 Hz
 totalTime = 0  # Total time in [s]
@@ -30,8 +29,6 @@ totalTime = 0  # Total time in [s]
 initPose = np.array([0, 0, 0])  # Initial pose (x, y, theta) of the robot
 currentpose = initPose
 lastpose = initPose
-
-
 
 path_storage = np.zeros((2, 1))
 
@@ -48,7 +45,6 @@ yMax = 1.3 * np.max(waypoints[:, 1]) + offset
 yMin = np.min(waypoints[:, 1]) - 0.3 * np.abs(np.max(waypoints[:, 1])) - offset
 traj_handle, = plt.plot(0, 0, 'b.-', linewidth=1,markersize=4)
 plt.ion()
-
 
 err = 0
 
@@ -142,7 +138,6 @@ while step <= waypoints.shape[0]:
     distance = np.linalg.norm(currentpose[:2] - waypoints[-1, :])
     lastpose = currentpose
     totalTime = totalTime + sampleTime
-
    
     # plt.clf()  # Clear the current figure
     plt.plot(waypoints[:, 0], waypoints[:, 1], 'r.', markersize=2)
@@ -151,8 +146,6 @@ while step <= waypoints.shape[0]:
     traj_x.append(currentpose[0])
     traj_y.append(currentpose[1])
     traj_handle.set_data(traj_x, traj_y)
-
-    
 
     step += 1
     plt.pause(sampleTime)
