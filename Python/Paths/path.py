@@ -31,7 +31,7 @@ def gen_path(shape, f=1):
         return route
     elif shape == "8":
         mat_file_path = os.path.join(current_script_dir, 'eight.mat')
-        route = io.loadmat(mat_file_path)['route']
+        route = io.loadmat(mat_file_path)['eight']
         return route
     else:
         raise ValueError("Unsupported shape: {}".format(shape))
