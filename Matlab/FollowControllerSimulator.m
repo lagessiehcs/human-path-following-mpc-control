@@ -19,6 +19,9 @@ control = "MPC"; % Options: MPC, PID
 
 route = gen_path(shape);
 
+%% Generate GIF
+gen_gif = false;
+
 %% Define waypoints
 L = arclength(route(:,1), route(:,2), 'spline'); % Calculate length of the path
 scale = 0.05 / (L / size(route, 1)); % Scale the path so the human walks at 1 m/s
@@ -87,6 +90,11 @@ step = 1;
 velB = [0; 0; 0];
 err = 0;
 
+% Prepare for GIF creation
+if gen_gif
+    gifFilename = 'animated_plot.gif';
+end
+
 while step <= size(waypoints, 1)
     % Sensor output: relative distance between current pose and operator
     dx = waypoints(step, 1) - currentPose(1); % Global coordinate
@@ -153,7 +161,20 @@ while step <= size(waypoints, 1)
     viz(currentPose, [waypoints(:, 1) waypoints(:, 2)]);
     xlim([xMin xMax]);
     ylim([yMin yMax]);
+    set(gcf, 'Position', [100, 100, 500*(xMax-xMin)/(yMax-yMin), 500]);
 
+    if gen_gif
+        % Capture frame and write to GIF
+        frame = getframe(gcf);
+        img = frame2im(frame);
+        [imgInd, cmap] = rgb2ind(img, 256);
+        
+        if step == 1
+            imwrite(imgInd, cmap, gifFilename, 'gif', 'LoopCount', Inf, 'DelayTime', sampleTime);
+        else
+            imwrite(imgInd, cmap, gifFilename, 'gif', 'WriteMode', 'append', 'DelayTime', sampleTime);
+        end
+    end
     step = step + 1; 
     waitfor(r);
 end
