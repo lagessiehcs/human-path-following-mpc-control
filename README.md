@@ -13,26 +13,16 @@ Before running the code, ensure you have the following:
 ### Python
 
 The following packages are required for the implementation in Python:
-1. pip (To install packages):   
-   ````
-   python -m pip install -U pip
-   ````
-3. CasADi:
-   ````
-   pip install casadi
-   ````
-4. Numpy
-   ````
-   pip install numpy
-   ```` 
-5. Matplotlib
-   ````
-   python -m pip install matplotlib   
-   ````
-6. Scipy
-   ````
-   python -m pip install scipy
-   ````
+````
+python -m pip install -U pip 
+pip install casadi
+pip install numpy
+python -m pip install matplotlib
+python -m pip install scipy
+````
+   
+## Simulation Demo
+![Demo GIF](./Matlab/Animation/animated_plot.gif)
 
 ## Source
 The MPC implementation in this project was inspired by the workshop [MPC and MHE implementation in Matlab using Casadi](https://www.youtube.com/watch?v=RrnkPrcpyEA).
