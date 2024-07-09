@@ -61,12 +61,15 @@ class Visualize:
         plt.ylim(self.yMin, self.yMax)
 
         # Plot the path of the robot
-        self.ax.plot(x, y, 'b.-', linewidth=1, markersize=2)
-        self.ax.plot(waypoints[:, 0], waypoints[:, 1], 'r.', markersize=2)
+        self.ax.plot(x, y, 'b.-', linewidth=1, markersize=2)        
         self.ax.plot(x[-1], y[-1], 'b.', markersize=14)  # Highlight the current position
 
+        # Plot the human path
+        self.ax.plot(waypoints[:, 0], waypoints[:, 1], 'r.', markersize=2)
+        self.ax.plot(waypoints[-1, 0], waypoints[-1, 1], 'rX', markersize=8)
+
         # Calculate and draw the new line indicating orientation
-        line_length = 1
+        line_length = 0.6
         end_x = x[-1] + line_length * cos(theta)
         end_y = y[-1] + line_length * sin(theta)
         self.ax.plot([x[-1], end_x], [y[-1], end_y], 'b-', linewidth=2)

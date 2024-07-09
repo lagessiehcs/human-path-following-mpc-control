@@ -35,6 +35,7 @@ path_storage = np.zeros((2, 1))
 positions = [initPose[:2]]
 vis = Visualize()
 vis.setup_plot(waypoints, shape)
+waypoints_subset = np.zeros((1, 2))
 
 # Define error accumulation variable
 err = 0
@@ -61,7 +62,7 @@ if control == "MPC":
 step = 1
 velB = np.array([0, 0, 0])
 
-while step <= waypoints.shape[0]:
+while step < waypoints.shape[0]:
     # Calculate relative distance between current pose and operator
     dx = waypoints[step - 1, 0] - currentPose[0]
     dy = waypoints[step - 1, 1] - currentPose[1]
@@ -109,8 +110,9 @@ while step <= waypoints.shape[0]:
         err += np.linalg.norm(currentPose[:2] - waypoints[step - numPos - 1, :])
 
     # Update positions for visualization
+    waypoints_subset = np.vstack([waypoints_subset, waypoints[step, :]]) 
     positions = np.vstack((positions, currentPose[:2]))
-    vis.update_plot(waypoints, positions, currentPose[2], sampleTime)
+    vis.update_plot(waypoints_subset, positions, currentPose[2], sampleTime)
 
     lastPose = currentPose
     step += 1
