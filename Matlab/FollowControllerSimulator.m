@@ -20,7 +20,7 @@ control = "MPC"; % Options: MPC|PID
 route = gen_path(shape);
 
 %% Generate GIF
-gen_gif = true; % Options: true|false
+gen_gif = false; % Options: true|false
 
 %% Define waypoints
 L = arclength(route(:,1), route(:,2), 'spline'); % Calculate length of the path
@@ -161,10 +161,10 @@ while step <= size(waypoints, 1)
     viz(currentPose, [waypoints(:, 1) waypoints(:, 2)]);
     xlim([xMin xMax]);
     ylim([yMin yMax]);
-    set(gcf, 'Position', [100, 100, 500*1.1*(xMax-xMin)/(yMax-yMin), 500]);
-
+    
     if gen_gif
         % Capture frame and write to GIF
+        set(gcf, 'Position', [100, 100, 500*1.1*(xMax-xMin)/(yMax-yMin), 500]);
         frame = getframe(gcf);
         img = frame2im(frame);
         [imgInd, cmap] = rgb2ind(img, 256);
