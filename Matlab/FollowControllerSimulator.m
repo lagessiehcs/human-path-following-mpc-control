@@ -14,13 +14,13 @@ addpath("casadi-3.6.5-windows64-matlab2018b\");
 import casadi.*;
 
 %% Load route and control options
-shape = "Sample"; % Options: Sinus, Sample, Straight, 8
-control = "MPC"; % Options: MPC, PID
+shape = "Sinus"; % Options: Sinus|Sample|Straight|8
+control = "MPC"; % Options: MPC|PID
 
 route = gen_path(shape);
 
 %% Generate GIF
-gen_gif = false;
+gen_gif = true; % Options: true|false
 
 %% Define waypoints
 L = arclength(route(:,1), route(:,2), 'spline'); % Calculate length of the path
@@ -92,7 +92,7 @@ err = 0;
 
 % Prepare for GIF creation
 if gen_gif
-    gifFilename = 'animated_plot.gif';
+    gifFilename = 'Animation/animated_plot.gif';
 end
 
 while step <= size(waypoints, 1)
@@ -161,7 +161,7 @@ while step <= size(waypoints, 1)
     viz(currentPose, [waypoints(:, 1) waypoints(:, 2)]);
     xlim([xMin xMax]);
     ylim([yMin yMax]);
-    set(gcf, 'Position', [100, 100, 500*(xMax-xMin)/(yMax-yMin), 500]);
+    set(gcf, 'Position', [100, 100, 500*1.1*(xMax-xMin)/(yMax-yMin), 500]);
 
     if gen_gif
         % Capture frame and write to GIF
