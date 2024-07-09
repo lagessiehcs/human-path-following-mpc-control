@@ -117,4 +117,4 @@ while step <= waypoints.shape[0]:
 
 print('Total time:', step * sampleTime)
 print('Error sum:', err)
-plt.show(block=True)
+plt.show()

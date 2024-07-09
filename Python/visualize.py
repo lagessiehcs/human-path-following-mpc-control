@@ -30,7 +30,6 @@ class Visualize:
             offset = 5
         self.yMax = 1.3 * np.max(waypoints[:, 1]) + offset
         self.yMin = np.min(waypoints[:, 1]) - 0.3 * np.abs(np.max(waypoints[:, 1])) - offset
-        self.ax.set_aspect('equal')
         plt.xlim(self.xMin, self.xMax)
         plt.ylim(self.yMin, self.yMax)
 
@@ -57,6 +56,7 @@ class Visualize:
 
         # Set plot limits and aspect ratio again
         self.ax.set_aspect('equal')
+        self.ax.set_title('Robot Visualization', fontweight='bold')
         plt.xlim(self.xMin, self.xMax)
         plt.ylim(self.yMin, self.yMax)
 
