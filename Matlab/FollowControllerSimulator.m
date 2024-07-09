@@ -14,13 +14,13 @@ addpath("casadi-3.6.5-windows64-matlab2018b\");
 import casadi.*;
 
 %% Load route and control options
-shape = "Sinus"; % Options: Sinus|Sample|Straight|8
+shape = "Sample"; % Options: Sinus|Sample|Straight|8
 control = "MPC"; % Options: MPC|PID
 
 route = gen_path(shape);
 
 %% Generate GIF
-gen_gif = true; % Options: true|false
+gen_gif = false; % Options: true|false
 
 %% Define waypoints
 L = arclength(route(:,1), route(:,2), 'spline'); % Calculate length of the path
