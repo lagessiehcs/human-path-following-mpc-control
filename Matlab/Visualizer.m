@@ -5,7 +5,9 @@ classdef Visualizer < matlab.System & matlab.system.mixin.CustomIcon
     % environment. Additionally has the option to display a map as a 
     % robotics.OccupancyGrid or robotics.BinaryOccupancyGrid, object
     % trajectory, waypoints, lidar scans, and/or objects.
-    %
+    % 
+    % This class is adapted from the class Visualizer2D of the MATLAB
+    % Toolbox <a href="https://de.mathworks.com/matlabcentral/fileexchange/66586-mobile-robotics-simulation-toolbox">Mobile Robotics Simulation Toolbox</a>
     % For more information, see <a href="matlab:edit mrsDocVisualizer2D">the documentation page</a>
     %
     % Copyright 2018-2019 The MathWorks, Inc.
