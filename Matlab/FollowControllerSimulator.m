@@ -20,7 +20,7 @@ control = "MPC"; % Options: MPC|PID
 route = gen_path(shape);
 
 %% Generate GIF
-gen_gif = false; % Options: true|false
+gen_gif = true; % Options: true|false
 
 %% Define waypoints
 L = arclength(route(:,1), route(:,2), 'spline'); % Calculate length of the path
@@ -44,7 +44,7 @@ lastPose = initPose;
 pathStorage = zeros(2, 1);
 
 % Create visualizer
-viz = Visualizer2D;
+viz = Visualizer;
 viz.hasWaypoints = true;
 
 % Set visualization limits
@@ -156,9 +156,10 @@ while step <= size(waypoints, 1)
     distance = norm(currentPose(1:2) - waypoints(end, :)');
     lastPose = currentPose;
     totalTime = totalTime + sampleTime;
-
+    
+    waypoints_subset = waypoints(1:step, :);
     % Update visualization
-    viz(currentPose, [waypoints(:, 1) waypoints(:, 2)]);
+    viz(currentPose, [waypoints_subset(:, 1) waypoints_subset(:, 2)]);
     xlim([xMin xMax]);
     ylim([yMin yMax]);
     
