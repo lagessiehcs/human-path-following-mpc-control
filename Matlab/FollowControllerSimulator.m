@@ -1,3 +1,24 @@
+%% Differential drive vehicle following waypoints using the 
+% simulator for testing follow controller path of human (contains only position (x,y), no rotation (phi))
+%
+% Copyright 2018-2019 The MathWorks, Inc.
+
+clear;
+clc;
+
+% Add necessary paths
+addpath("arclength\");
+addpath("Paths\");
+addpath("casadi-3.6.5-windows64-matlab2018b\");
+
+import casadi.*;
+
+%% Load route and control options
+shape = "Sample"; % Options: Sinus, Sample, Straight, 8
+control = "MPC"; % Options: MPC, PID
+
+route = gen_path(shape);
+
 %% Define waypoints
 L = arclength(route(:,1), route(:,2), 'spline'); % Calculate length of the path
 scale = 0.05 / (L / size(route, 1)); % Scale the path so the human walks at 1 m/s
@@ -136,3 +157,4 @@ while step <= size(waypoints, 1)
     step = step + 1; 
     waitfor(r);
 end
+fprintf("Error sum: %.2f\n", err)
