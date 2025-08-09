@@ -14,7 +14,7 @@ addpath("casadi-3.6.5-windows64-matlab2018b\");
 import casadi.*;
 
 %% Load route and control options
-shape = "Sample"; % Options: Sinus|Sample|Straight|8
+shape = "Sinus"; % Options: Sinus|Sample|Straight|8
 control = "MPC"; % Options: MPC|PID
 
 route = gen_path(shape);
@@ -101,7 +101,7 @@ while step <= size(waypoints, 1)
     dy = waypoints(step, 2) - currentPose(2);
    
     % Derive relative distances from human to robot relative to the robot's frame    
-    dRel = rotz(double(currentPose(3)))^-1 * [dx dy 1]';
+    dRel = rotz(180/pi*double(currentPose(3)))^-1 * [dx dy 1]';
 
     % Design controller based on sensor outputs    
     currentPoseLast = -velB * sampleTime;
