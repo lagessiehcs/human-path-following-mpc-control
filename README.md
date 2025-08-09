@@ -8,7 +8,9 @@ In the MATLAB implementation, the mobile robot is simulated using the [Mobile Ro
 Before running the code, ensure you have the following:
 1. **[Mobile Robotics Simulation Toolbox](https://de.mathworks.com/matlabcentral/fileexchange/66586-mobile-robotics-simulation-toolbox)**: This toolbox is essential for the simulation. You can install it from the MATLAB Central File Exchange.
 
-2. **CasADi Package**: This project was tested with casadi-3.6.5, which can be downloaded [here](https://github.com/casadi/casadi/releases?page=3). Once downloaded, extract the package and place it in the MATLAB folder.
+2. **[Phased Array System Toolbox](https://de.mathworks.com/products/phased-array.html )** for the rotz function.
+
+3. **CasADi Package**: This project was tested with casadi-3.6.5, which can be downloaded [here](https://github.com/casadi/casadi/releases?page=3). Once downloaded, extract the package and place it in the MATLAB folder.
 
 ### Python
 
